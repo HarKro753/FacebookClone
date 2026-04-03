@@ -144,7 +144,7 @@ function unseen_poke_count($user_id) {
  */
 function photo_url($photo) {
     if (!$photo || $photo === 'default_photo.jpg') {
-        return 'images/default_photo.svg';
+        return 'images/default_photo.jpg';
     }
     return 'images/uploads/' . $photo;
 }
