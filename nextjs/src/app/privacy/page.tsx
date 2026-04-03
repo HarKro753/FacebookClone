@@ -18,23 +18,23 @@ export default async function PrivacyPage() {
   ];
 
   return (
-    <div className="form-box" style={{ width: 550, margin: '0 auto' }}>
-      <h2>Privacy Settings</h2>
-      <p style={{ marginBottom: 10 }}>Control who can see your information.</p>
+    <div className="bg-white border border-fb-light p-4 mb-4 w-[550px] mx-auto">
+      <h2 className="text-[13px] text-fb-blue mb-2.5 border-b border-fb-light pb-1">Privacy Settings</h2>
+      <p className="mb-2.5">Control who can see your information.</p>
 
       <form action={updatePrivacyAction}>
-        <table className="privacy-table">
+        <table className="w-full bg-white border border-fb-light">
           <thead>
             <tr>
-              <th>Field</th>
-              <th>Who Can See</th>
+              <th className="bg-fb-light px-2.5 py-1 text-left text-xs text-fb-blue">Field</th>
+              <th className="bg-fb-light px-2.5 py-1 text-left text-xs text-fb-blue">Who Can See</th>
             </tr>
           </thead>
           <tbody>
             {fieldsConfig.map(([field, label]) => (
               <tr key={field}>
-                <td>{label}</td>
-                <td>
+                <td className="px-2.5 py-1 border-b border-fb-bg">{label}</td>
+                <td className="px-2.5 py-1 border-b border-fb-bg">
                   <select name={field} defaultValue={settings[field] || 'friends'}>
                     <option value="everyone">Everyone</option>
                     <option value="friends">Friends Only</option>
@@ -47,7 +47,7 @@ export default async function PrivacyPage() {
         </table>
 
         <br />
-        <input type="submit" value="Save Settings" className="btn-primary" />
+        <input type="submit" value="Save Settings" className="bg-fb-blue text-white border-fb-dark font-bold hover:bg-fb-hover" />
       </form>
     </div>
   );

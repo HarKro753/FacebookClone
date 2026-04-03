@@ -9,11 +9,12 @@ interface BrowseSelectProps {
 
 export default function BrowseSelect({ name, label, defaultValue, children }: BrowseSelectProps) {
   return (
-    <form method="get" action="/browse" style={{ display: 'inline' }}>
-      <label>{label}:</label>
+    <form method="get" action="/browse" className="inline">
+      <label className="font-bold mr-1">{label}:</label>
       <select
         name={name}
         defaultValue={defaultValue}
+        className="mr-4"
         onChange={(e) => {
           (e.target.form as HTMLFormElement).submit();
         }}

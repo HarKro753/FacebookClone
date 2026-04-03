@@ -34,9 +34,9 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <div className="form-box">
-        <h2>Browse</h2>
-        <div className="browse-filters">
+      <div className="bg-white border border-fb-light p-4 mb-4">
+        <h2 className="text-[13px] text-fb-blue mb-2.5 border-b border-fb-light pb-1">Browse</h2>
+        <div className="overflow-hidden">
           <BrowseSelect name="house_id" label="House" defaultValue={filterHouse ? String(filterHouse) : ''}>
             <option value="">-- All Houses --</option>
             {houses.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}
@@ -55,16 +55,16 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
       </div>
 
       {filterLabel ? (
-        <div className="form-box">
-          <h2>{filterLabel} ({results.length} people)</h2>
+        <div className="bg-white border border-fb-light p-4 mb-4">
+          <h2 className="text-[13px] text-fb-blue mb-2.5 border-b border-fb-light pb-1">{filterLabel} ({results.length} people)</h2>
           {results.length > 0 ? results.map(user => (
-            <div className="user-row" key={user.id}>
-              <img src={photoUrl(user.photo)} alt="" />
-              <div className="user-info">
-                <div className="user-name">
+            <div className="overflow-hidden py-2 border-b border-fb-bg" key={user.id}>
+              <img src={photoUrl(user.photo)} alt="" className="float-left w-[50px] h-[50px] border border-[#999] mr-2.5" />
+              <div className="float-left">
+                <div className="font-bold text-xs">
                   <Link href={`/profile/${user.id}`}>{user.first_name} {user.last_name}</Link>
                 </div>
-                <div className="user-details">
+                <div className="text-[#666] mt-0.5">
                   {[
                     user.class_year ? `Class of ${user.class_year}` : null,
                     user.house_name,
@@ -76,7 +76,7 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
           )) : <p>No people found with this filter.</p>}
         </div>
       ) : (!filterHouse && !filterYear && !filterCourse) && (
-        <div className="form-box">
+        <div className="bg-white border border-fb-light p-4 mb-4">
           <p>Select a house, year, or course above to browse people.</p>
         </div>
       )}

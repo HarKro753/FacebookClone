@@ -15,9 +15,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
       </head>
-      <body>
+      <body className="m-0 p-0 bg-fb-bg text-fb-text">
         <Header currentUser={currentUser} />
-        <div id="content">
+        <div className="w-[760px] mx-auto py-4">
           <FlashMessage />
           {children}
         </div>
