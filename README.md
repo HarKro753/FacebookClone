@@ -94,7 +94,40 @@ php -S localhost:8080
 http://localhost:8080
 ```
 
-> Register with any `@harvard.edu` or `@gmail.com` email address (e.g., `mark@harvard.edu`, `mark@gmail.com`).
+> Register with any `@harvard.edu` or `@gmail.com` email address, or use a demo account below.
+
+### Demo Accounts
+
+The database comes pre-loaded with **20 fictional Harvard students** — complete with profiles, friendships, wall posts, and pokes. All share the same password:
+
+```
+Password: harvard2004
+```
+
+| Email | Name | House | Class | Concentration |
+|---|---|---|---|---|
+| `mark.e@harvard.edu` | Mark Ellison | Kirkland | '06 | Computer Science |
+| `priya.s@harvard.edu` | Priya Shankar | Eliot | '05 | Economics |
+| `tyler.w@harvard.edu` | Tyler Whitfield | Adams | '04 | Government |
+| `jessica.m@harvard.edu` | Jessica Morrison | Lowell | '06 | English |
+| `david.k@harvard.edu` | David Kim | Dunster | '05 | Mathematics |
+| `sarah.c@harvard.edu` | Sarah Chen | Pforzheimer | '07 | History |
+| `james.r@harvard.edu` | James Robinson | Leverett | '05 | Human Evolutionary Biology |
+| `emily.b@harvard.edu` | Emily Brooks | Winthrop | '06 | Social Studies |
+| `andrew.l@harvard.edu` | Andrew Liu | Quincy | '04 | Physics |
+| `lauren.d@harvard.edu` | Lauren Davis | Cabot | '06 | Psychology |
+| `chris.p@harvard.edu` | Christopher Park | Mather | '05 | Applied Mathematics |
+| `amanda.j@harvard.edu` | Amanda Johnson | Eliot | '06 | Visual and Environmental Studies |
+| `daniel.g@harvard.edu` | Daniel Garcia | Adams | '04 | The Classics |
+| `rachel.t@harvard.edu` | Rachel Thompson | Currier | '07 | Sociology |
+| `michael.z@harvard.edu` | Michael Zhang | Kirkland | '05 | Computer Science |
+| `katherine.w@harvard.edu` | Katherine Walsh | Lowell | '06 | History of Art and Architecture |
+| `robert.h@harvard.edu` | Robert Hayes | Winthrop | '04 | Philosophy |
+| `michelle.n@harvard.edu` | Michelle Nakamura | Leverett | '07 | Neurobiology |
+| `william.o@harvard.edu` | William O'Brien | Dunster | '05 | History |
+| `olivia.f@harvard.edu` | Olivia Fischer | Adams | '07 | Music |
+
+> Profile photos are AI-generated via [thispersondoesnotexist.com](https://thispersondoesnotexist.com) (copyright-free). All names are fictional.
 
 ---
 

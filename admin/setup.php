@@ -18,6 +18,8 @@ $sql_files = [
     '001_schema.sql',
     '002_seed_data.sql',
     '003_indexes.sql',
+    '004_mock_users.sql',
+    '005_mock_social.sql',
 ];
 
 foreach ($sql_files as $file) {
@@ -28,6 +30,16 @@ foreach ($sql_files as $file) {
     if ($sql === false) {
         echo "ERROR: Could not read $path\n";
         continue;
+    }
+
+    // For mock users, replace the placeholder password hash with a real one
+    if ($file === '004_mock_users.sql') {
+        $real_hash = password_hash('harvard2004', PASSWORD_DEFAULT);
+        $sql = str_replace(
+            "SET @pw = '\$2y\$10\$8KzQZx1G5XbKJqMmX8VQxOuY4QXZJH1ROy1G5XbKJqMmX8VQxOuY4';",
+            "SET @pw = '" . $conn->real_escape_string($real_hash) . "';",
+            $sql
+        );
     }
 
     // Execute multi-query
@@ -54,7 +66,9 @@ if (!is_dir($upload_dir)) {
 }
 
 echo "\n--- Setup complete! ---\n";
-echo "You can now <a href='../index.php'>go to thefacebook</a>.\n";
+echo "\nMock users loaded! Login with any @harvard.edu email and password: harvard2004\n";
+echo "Example: mark.e@harvard.edu / harvard2004\n";
+echo "\nYou can now <a href='../index.php'>go to thefacebook</a>.\n";
 echo "</pre>";
 
 $conn->close();
