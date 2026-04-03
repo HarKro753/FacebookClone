@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$fields['email']) {
             $errors[] = 'Email is required.';
-        } elseif (!preg_match(HARVARD_EMAIL_PATTERN, $fields['email'])) {
-            $errors[] = 'You must use a valid harvard.edu email address.';
+        } elseif (!preg_match(ALLOWED_EMAIL_PATTERN, $fields['email'])) {
+            $errors[] = 'You must use a valid harvard.edu or gmail.com email address.';
         } else {
             $existing = db_fetch_one("SELECT id FROM users WHERE email = ?", 's', [$fields['email']]);
             if ($existing) $errors[] = 'An account with this email already exists.';
@@ -80,7 +80,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="form-box" style="width: 500px; margin: 0 auto;">
     <h2>Create Your Account</h2>
-    <p style="margin-bottom: 10px;">You must have a valid <b>harvard.edu</b> email address to register.</p>
+    <p style="margin-bottom: 10px;">You must have a valid <b>harvard.edu</b> or <b>gmail.com</b> email address to register.</p>
 
     <?php if ($errors): ?>
         <div class="flash flash-error">

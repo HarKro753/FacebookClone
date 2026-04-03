@@ -14,5 +14,5 @@ define('MAX_PHOTO_SIZE', 2 * 1024 * 1024); // 2MB
 // Session configuration
 define('SESSION_LIFETIME', 86400); // 24 hours
 
-// Harvard email validation pattern
-define('HARVARD_EMAIL_PATTERN', '/^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?harvard\.edu$/i');
+// Email validation pattern (harvard.edu and gmail.com)
+define('ALLOWED_EMAIL_PATTERN', '/^[a-zA-Z0-9._%+-]+@(([a-zA-Z0-9.-]+\.)?harvard\.edu|gmail\.com)$/i');

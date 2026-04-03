@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <li>See a visualization of your social network</li>
             </ul>
 
-            <h2>To get started, you need a <b>harvard.edu</b> email address.</h2>
+            <h2>To get started, you need a <b>harvard.edu</b> or <b>gmail.com</b> email address.</h2>
             <p><a href="register.php"><b>&raquo; Register now</b></a></p>
         </div>
         <div id="landing-right">

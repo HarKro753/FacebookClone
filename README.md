@@ -94,7 +94,7 @@ php -S localhost:8080
 http://localhost:8080
 ```
 
-> Register with any `@harvard.edu` email address (e.g., `mark@harvard.edu`).
+> Register with any `@harvard.edu` or `@gmail.com` email address (e.g., `mark@harvard.edu`, `mark@gmail.com`).
 
 ---
 
