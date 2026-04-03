@@ -1,26 +1,11 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll } from '@/lib/db';
+import { getFriends } from '@/lib/queries/social';
 import { pendingRequestCount, photoUrl } from '@/lib/utils';
 import Link from 'next/link';
 
-interface FriendRow {
-  id: number; first_name: string; last_name: string; photo: string;
-  concentration: string | null; class_year: number | null; house_name: string | null;
-}
-
 export default async function FriendsPage() {
   const me = await requireLogin();
-
-  const friends = dbAll<FriendRow>(
-    `SELECT u.id, u.first_name, u.last_name, u.photo, u.concentration, u.class_year, h.name AS house_name
-     FROM users u
-     LEFT JOIN houses h ON u.house_id = h.id
-     JOIN friends f ON ((f.requester_id = u.id AND f.requested_id = ?) OR (f.requested_id = u.id AND f.requester_id = ?))
-     WHERE f.status = 'accepted'
-     ORDER BY u.last_name, u.first_name`,
-    me.id, me.id
-  );
-
+  const friends = getFriends(me.id);
   const pendingCount = pendingRequestCount(me.id);
 
   return (

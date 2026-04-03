@@ -1,60 +1,35 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll, dbGet } from '@/lib/db';
+import { getAllHouses, getAllCourses, getHouseName, getCourseInfo } from '@/lib/queries/catalog';
+import { browseByHouse, browseByYear, browseByCourse } from '@/lib/queries/users';
 import { photoUrl } from '@/lib/utils';
 import BrowseSelect from '@/components/BrowseSelect';
 import Link from 'next/link';
-
-interface House { id: number; name: string; }
-interface CourseRow { id: number; code: string; title: string; }
-interface UserRow {
-  id: number; first_name: string; last_name: string; photo: string;
-  class_year: number | null; concentration: string | null; house_name: string | null;
-}
-interface NameRow { name: string; }
-interface CourseInfo { code: string; title: string; }
 
 export default async function BrowsePage({ searchParams }: { searchParams: Promise<{ house_id?: string; year?: string; course_id?: string }> }) {
   await requireLogin();
   const params = await searchParams;
 
-  const houses = dbAll<House>('SELECT id, name FROM houses ORDER BY name');
-  const courses = dbAll<CourseRow>('SELECT id, code, title FROM courses ORDER BY code');
+  const houses = getAllHouses();
+  const courses = getAllCourses();
   const years = [2004, 2005, 2006, 2007];
 
   const filterHouse = params.house_id ? parseInt(params.house_id) : 0;
   const filterYear = params.year ? parseInt(params.year) : 0;
   const filterCourse = params.course_id ? parseInt(params.course_id) : 0;
 
-  let results: UserRow[] = [];
+  let results: ReturnType<typeof browseByHouse> = [];
   let filterLabel = '';
 
   if (filterHouse) {
-    const house = dbGet<NameRow>('SELECT name FROM houses WHERE id = ?', filterHouse);
-    filterLabel = house ? house.name : 'Unknown House';
-    results = dbAll<UserRow>(
-      `SELECT u.id, u.first_name, u.last_name, u.photo, u.class_year, u.concentration, h.name AS house_name
-       FROM users u LEFT JOIN houses h ON u.house_id = h.id
-       WHERE u.house_id = ? ORDER BY u.last_name, u.first_name LIMIT 100`,
-      filterHouse
-    );
+    filterLabel = getHouseName(filterHouse) ?? 'Unknown House';
+    results = browseByHouse(filterHouse);
   } else if (filterYear) {
     filterLabel = `Class of ${filterYear}`;
-    results = dbAll<UserRow>(
-      `SELECT u.id, u.first_name, u.last_name, u.photo, u.class_year, u.concentration, h.name AS house_name
-       FROM users u LEFT JOIN houses h ON u.house_id = h.id
-       WHERE u.class_year = ? ORDER BY u.last_name, u.first_name LIMIT 100`,
-      filterYear
-    );
+    results = browseByYear(filterYear);
   } else if (filterCourse) {
-    const course = dbGet<CourseInfo>('SELECT code, title FROM courses WHERE id = ?', filterCourse);
+    const course = getCourseInfo(filterCourse);
     filterLabel = course ? `${course.code} — ${course.title}` : 'Unknown Course';
-    results = dbAll<UserRow>(
-      `SELECT u.id, u.first_name, u.last_name, u.photo, u.class_year, u.concentration, h.name AS house_name
-       FROM users u LEFT JOIN houses h ON u.house_id = h.id
-       JOIN user_courses uc ON uc.user_id = u.id
-       WHERE uc.course_id = ? ORDER BY u.last_name, u.first_name LIMIT 100`,
-      filterCourse
-    );
+    results = browseByCourse(filterCourse);
   }
 
   return (

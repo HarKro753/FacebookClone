@@ -1,51 +1,18 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll } from '@/lib/db';
+import { getUnseenPokes, getPendingRequests, getWallPosts, getRandomFriends } from '@/lib/queries/social';
 import { friendCount, pendingRequestCount, photoUrl, timeAgo } from '@/lib/utils';
 import { pokeAction } from '@/actions/poke';
 import { friendAction } from '@/actions/friend';
 import Link from 'next/link';
 
-interface PokeRow { poker_id: number; first_name: string; last_name: string; }
-interface RequestRow { requester_id: number; first_name: string; last_name: string; photo: string; created_at: string; }
-interface WallPostRow { author_id: number; first_name: string; last_name: string; body: string; created_at: string; }
-interface FriendRow { id: number; first_name: string; last_name: string; photo: string; }
-
 export default async function HomePage() {
   const user = await requireLogin();
-  const pokes = dbAll<PokeRow>(
-    `SELECT p.*, u.first_name, u.last_name FROM pokes p
-     JOIN users u ON p.poker_id = u.id
-     WHERE p.poked_id = ? AND p.seen = 0
-     ORDER BY p.created_at DESC`,
-    user.id
-  );
-
-  const requests = dbAll<RequestRow>(
-    `SELECT f.*, u.first_name, u.last_name, u.photo FROM friends f
-     JOIN users u ON f.requester_id = u.id
-     WHERE f.requested_id = ? AND f.status = 'pending'
-     ORDER BY f.created_at DESC LIMIT 5`,
-    user.id
-  );
-
-  const wallPosts = dbAll<WallPostRow>(
-    `SELECT w.*, u.first_name, u.last_name FROM wall_posts w
-     JOIN users u ON w.author_id = u.id
-     WHERE w.profile_id = ?
-     ORDER BY w.created_at DESC LIMIT 10`,
-    user.id
-  );
-
+  const pokes = getUnseenPokes(user.id);
+  const requests = getPendingRequests(user.id, 5);
+  const wallPosts = getWallPosts(user.id, 10);
   const numFriends = friendCount(user.id);
   const pendingCount = pendingRequestCount(user.id);
-
-  const friendsList = dbAll<FriendRow>(
-    `SELECT u.id, u.first_name, u.last_name, u.photo FROM users u
-     JOIN friends f ON ((f.requester_id = u.id AND f.requested_id = ?) OR (f.requested_id = u.id AND f.requester_id = ?))
-     WHERE f.status = 'accepted'
-     ORDER BY RANDOM() LIMIT 9`,
-    user.id, user.id
-  );
+  const friendsList = getRandomFriends(user.id, 9);
 
   return (
     <>
@@ -79,13 +46,13 @@ export default async function HomePage() {
                     <Link href={`/profile/${req.requester_id}`}>{req.first_name} {req.last_name}</Link>
                     <div className="request-actions">
                       <form action={friendAction} style={{ display: 'inline' }}>
-    
+
                         <input type="hidden" name="user_id" value={req.requester_id} />
                         <input type="hidden" name="action" value="accept" />
                         <input type="submit" value="Confirm" />
                       </form>{' '}
                       <form action={friendAction} style={{ display: 'inline' }}>
-    
+
                         <input type="hidden" name="user_id" value={req.requester_id} />
                         <input type="hidden" name="action" value="reject" />
                         <input type="submit" value="Reject" />

@@ -1,30 +1,14 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll, dbGet } from '@/lib/db';
+import { getUserEditData } from '@/lib/queries/users';
+import { getAllHouses, getAllCourses, getUserCourseIds } from '@/lib/queries/catalog';
 import { updateProfileAction } from '@/actions/profile';
-
-interface House { id: number; name: string; }
-interface Course { id: number; code: string; title: string; }
-interface UserRow {
-  id: number; first_name: string; last_name: string; sex: string | null; birthday: string | null;
-  phone: string | null; relationship_status: string | null; interested_in: string | null;
-  political_views: string | null; house_id: number | null; class_year: number | null;
-  concentration: string | null; interests: string | null; favorite_music: string | null;
-  favorite_movies: string | null; favorite_books: string | null; favorite_quotes: string | null;
-  about_me: string | null; house_name: string | null;
-}
-interface CourseIdRow { course_id: number; }
 
 export default async function EditProfilePage() {
   const me = await requireLogin();
-  const houses = dbAll<House>('SELECT id, name FROM houses ORDER BY name');
-  const allCourses = dbAll<Course>('SELECT id, code, title FROM courses ORDER BY code');
-  const userCourseIds = dbAll<CourseIdRow>('SELECT course_id FROM user_courses WHERE user_id = ?', me.id).map(r => r.course_id);
-
-  // Reload full user data
-  const user = dbGet<UserRow>(
-    'SELECT u.*, h.name AS house_name FROM users u LEFT JOIN houses h ON u.house_id = h.id WHERE u.id = ?',
-    me.id
-  )!;
+  const houses = getAllHouses();
+  const allCourses = getAllCourses();
+  const userCourseIds = getUserCourseIds(me.id);
+  const user = getUserEditData(me.id)!;
 
   const statuses = ['Single', 'In a Relationship', 'Engaged', 'Married', "It's Complicated"];
 

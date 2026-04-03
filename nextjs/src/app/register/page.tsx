@@ -1,12 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { registerAction } from "@/actions/auth";
-import { dbAll } from "@/lib/db";
-
-interface House {
-  id: number;
-  name: string;
-}
+import { getAllHouses } from "@/lib/queries/catalog";
 
 export default async function RegisterPage({
   searchParams,
@@ -16,7 +11,7 @@ export default async function RegisterPage({
   const currentUser = await getCurrentUser();
   if (currentUser) redirect("/home");
 
-  const houses = dbAll<House>("SELECT id, name FROM houses ORDER BY name");
+  const houses = getAllHouses();
   const params = await searchParams;
 
   let errors: string[] = [];

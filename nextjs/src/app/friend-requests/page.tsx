@@ -1,25 +1,12 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll } from '@/lib/db';
+import { getDetailedPendingRequests } from '@/lib/queries/social';
 import { photoUrl, timeAgo } from '@/lib/utils';
 import { friendAction } from '@/actions/friend';
 import Link from 'next/link';
 
-interface RequestRow {
-  requester_id: number; first_name: string; last_name: string; photo: string;
-  class_year: number | null; house_name: string | null; created_at: string;
-}
-
 export default async function FriendRequestsPage() {
   const me = await requireLogin();
-  const requests = dbAll<RequestRow>(
-    `SELECT f.*, u.first_name, u.last_name, u.photo, u.class_year, h.name AS house_name
-     FROM friends f
-     JOIN users u ON f.requester_id = u.id
-     LEFT JOIN houses h ON u.house_id = h.id
-     WHERE f.requested_id = ? AND f.status = 'pending'
-     ORDER BY f.created_at DESC`,
-    me.id
-  );
+  const requests = getDetailedPendingRequests(me.id);
 
   return (
     <div className="form-box">

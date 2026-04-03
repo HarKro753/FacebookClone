@@ -1,70 +1,34 @@
 import { requireLogin } from '@/lib/auth';
-import { dbAll, dbGet } from '@/lib/db';
+import { getUserProfile } from '@/lib/queries/users';
+import { getUserCourses } from '@/lib/queries/catalog';
+import { getWallPosts, getRandomFriends } from '@/lib/queries/social';
 import { friendshipStatus, canView, friendCount, photoUrl, timeAgo, formatDate } from '@/lib/utils';
 import { friendAction } from '@/actions/friend';
 import { pokeAction } from '@/actions/poke';
 import { postWallAction } from '@/actions/wall';
-import { redirect, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-
-interface ProfileUser {
-  id: number; email: string; first_name: string; last_name: string;
-  sex: string | null; birthday: string | null; phone: string | null; photo: string;
-  relationship_status: string | null; interested_in: string | null; interests: string | null;
-  favorite_music: string | null; favorite_movies: string | null; favorite_books: string | null;
-  favorite_quotes: string | null; about_me: string | null; political_views: string | null;
-  house_name: string | null; class_year: number | null; concentration: string | null; created_at: string;
-}
-interface CourseRow { id: number; code: string; title: string; professor: string | null; }
-interface WallPostRow { author_id: number; first_name: string; last_name: string; body: string; created_at: string; }
-interface FriendRow { id: number; first_name: string; last_name: string; photo: string; }
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const me = await requireLogin();
   const { id } = await params;
   const profileId = parseInt(id);
 
-  const profile = dbGet<ProfileUser>(
-    'SELECT u.*, h.name AS house_name FROM users u LEFT JOIN houses h ON u.house_id = h.id WHERE u.id = ?',
-    profileId
-  );
-
-  if (!profile) {
-    notFound();
-  }
+  const profile = getUserProfile(profileId);
+  if (!profile) notFound();
 
   const isOwn = me.id === profileId;
   const fStatus = friendshipStatus(me.id, profileId);
 
-  // Courses
-  let courses: CourseRow[] = [];
-  if (isOwn || canView(profileId, me.id, 'courses')) {
-    courses = dbAll<CourseRow>(
-      'SELECT c.* FROM courses c JOIN user_courses uc ON c.id = uc.course_id WHERE uc.user_id = ? ORDER BY c.code',
-      profileId
-    );
-  }
+  const courses = (isOwn || canView(profileId, me.id, 'courses'))
+    ? getUserCourses(profileId) : [];
 
-  // Wall posts
-  let wallPosts: WallPostRow[] = [];
-  if (isOwn || canView(profileId, me.id, 'wall')) {
-    wallPosts = dbAll<WallPostRow>(
-      `SELECT w.*, u.first_name, u.last_name FROM wall_posts w
-       JOIN users u ON w.author_id = u.id
-       WHERE w.profile_id = ? ORDER BY w.created_at DESC LIMIT 20`,
-      profileId
-    );
-  }
+  const wallPosts = (isOwn || canView(profileId, me.id, 'wall'))
+    ? getWallPosts(profileId) : [];
 
   const canPost = isOwn || canView(profileId, me.id, 'wall_posts');
   const numFriends = friendCount(profileId);
-
-  const profileFriends = dbAll<FriendRow>(
-    `SELECT u.id, u.first_name, u.last_name, u.photo FROM users u
-     JOIN friends f ON ((f.requester_id = u.id AND f.requested_id = ?) OR (f.requested_id = u.id AND f.requester_id = ?))
-     WHERE f.status = 'accepted' ORDER BY RANDOM() LIMIT 6`,
-    profileId, profileId
-  );
+  const profileFriends = getRandomFriends(profileId);
 
   const showInterests = isOwn || canView(profileId, me.id, 'interests');
   const showEmail = isOwn || canView(profileId, me.id, 'email');
@@ -218,7 +182,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
             {canPost && (
               <div className="wall-form">
                 <form action={postWallAction}>
-  
+
                   <input type="hidden" name="profile_id" value={profileId} />
                   <textarea name="body" placeholder={`Write on ${isOwn ? 'your' : profile.first_name + "'s"} wall...`} /><br />
                   <input type="submit" value="Post" />

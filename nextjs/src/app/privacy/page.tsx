@@ -1,16 +1,10 @@
 import { requireLogin } from '@/lib/auth';
-import { dbGet, dbRun } from '@/lib/db';
+import { ensurePrivacySettings } from '@/lib/queries/privacy';
 import { updatePrivacyAction } from '@/actions/privacy';
-
-interface PrivacyRow { [key: string]: string; }
 
 export default async function PrivacyPage() {
   const me = await requireLogin();
-  let settings = dbGet<PrivacyRow>('SELECT * FROM privacy_settings WHERE user_id = ?', me.id);
-  if (!settings) {
-    dbRun('INSERT INTO privacy_settings (user_id) VALUES (?)', me.id);
-    settings = dbGet<PrivacyRow>('SELECT * FROM privacy_settings WHERE user_id = ?', me.id)!;
-  }
+  const settings = ensurePrivacySettings(me.id);
 
   const fieldsConfig: [string, string][] = [
     ['show_email', 'Email Address'],
@@ -41,7 +35,7 @@ export default async function PrivacyPage() {
               <tr key={field}>
                 <td>{label}</td>
                 <td>
-                  <select name={field} defaultValue={settings![field] || 'friends'}>
+                  <select name={field} defaultValue={settings[field] || 'friends'}>
                     <option value="everyone">Everyone</option>
                     <option value="friends">Friends Only</option>
                     <option value="nobody">No One</option>
