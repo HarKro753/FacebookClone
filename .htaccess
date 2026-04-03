@@ -1,0 +1,32 @@
+# Deny access to sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block access to includes directory
+    RewriteRule ^includes/ - [F,L]
+
+    # Block access to sql directory
+    RewriteRule ^sql/ - [F,L]
+
+    # Block access to .htaccess itself
+    RewriteRule \.htaccess$ - [F,L]
+</IfModule>
+
+# Fallback: deny access via directory-level rules
+<FilesMatch "\.php$">
+    # Allow PHP files in root and admin only
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# PHP settings (if allowed)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 2M
+    php_value post_max_size 3M
+    php_value max_execution_time 30
+    php_value session.cookie_httponly 1
+</IfModule>
